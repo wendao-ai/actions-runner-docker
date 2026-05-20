@@ -1,0 +1,78 @@
+# docker-compose.yml — GitHub Actions self-hosted runners (4 个实例)
+# 用法：
+#   cp .env.example .env && 填入真实 token（RUNNER_TOKEN, RUNNER_TOKEN_2..4）
+#   docker compose up -d --no-recreate   # --no-recreate 保护已注册容器
+#   docker compose logs -f               # 看全部 runner 日志
+#   docker compose logs -f runner-2      # 单看某个
+#
+# 注册 token 一次性消耗 + 寿命约 1 小时 —— 每个 runner 配对自己的 token。
+# 若 down 后重新 up 某个 runner，需要先在 GitHub 重新生成对应的 token。
+
+x-runner-base: &runner-base
+  build:
+    context: .
+    args:
+      RUNNER_VERSION: "${RUNNER_VERSION:-2.334.0}"
+      APT_MIRROR: "${APT_MIRROR:-http://mirrors.tuna.tsinghua.edu.cn/ubuntu}"
+      DOCKER_MIRROR: "${DOCKER_MIRROR:-https://mirrors.aliyun.com/docker-ce/linux/ubuntu}"
+  image: gha-runner:${RUNNER_VERSION:-2.334.0}
+  restart: always
+
+services:
+  runner:                                       # 现存的 runner-1，保持原 spec 不动
+    <<: *runner-base
+    container_name: ${RUNNER_NAME:-wendao-runner}
+    environment:
+      RUNNER_URL:     ${RUNNER_URL}
+      RUNNER_TOKEN:   ${RUNNER_TOKEN}
+      RUNNER_NAME:    ${RUNNER_NAME:-wendao-runner}
+      RUNNER_LABELS:  ${RUNNER_LABELS:-self-hosted,linux,x64,docker}
+      RUNNER_WORKDIR: ${RUNNER_WORKDIR:-_work}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner-work:/actions-runner/_work
+
+  runner-2:
+    <<: *runner-base
+    container_name: ${RUNNER_NAME:-wendao-runner}-2
+    environment:
+      RUNNER_URL:     ${RUNNER_URL}
+      RUNNER_TOKEN:   ${RUNNER_TOKEN_2}
+      RUNNER_NAME:    ${RUNNER_NAME:-wendao-runner}-2
+      RUNNER_LABELS:  ${RUNNER_LABELS:-self-hosted,linux,x64,docker}
+      RUNNER_WORKDIR: _work
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner-work-2:/actions-runner/_work
+
+  runner-3:
+    <<: *runner-base
+    container_name: ${RUNNER_NAME:-wendao-runner}-3
+    environment:
+      RUNNER_URL:     ${RUNNER_URL}
+      RUNNER_TOKEN:   ${RUNNER_TOKEN_3}
+      RUNNER_NAME:    ${RUNNER_NAME:-wendao-runner}-3
+      RUNNER_LABELS:  ${RUNNER_LABELS:-self-hosted,linux,x64,docker}
+      RUNNER_WORKDIR: _work
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner-work-3:/actions-runner/_work
+
+  runner-4:
+    <<: *runner-base
+    container_name: ${RUNNER_NAME:-wendao-runner}-4
+    environment:
+      RUNNER_URL:     ${RUNNER_URL}
+      RUNNER_TOKEN:   ${RUNNER_TOKEN_4}
+      RUNNER_NAME:    ${RUNNER_NAME:-wendao-runner}-4
+      RUNNER_LABELS:  ${RUNNER_LABELS:-self-hosted,linux,x64,docker}
+      RUNNER_WORKDIR: _work
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner-work-4:/actions-runner/_work
+
+volumes:
+  runner-work:
+  runner-work-2:
+  runner-work-3:
+  runner-work-4:
