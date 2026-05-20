@@ -74,7 +74,7 @@ RUN sed -i \
         > /etc/apt/apt.conf.d/99-insecure-https \
  && apt-get update \
  && apt-get install -y --no-install-recommends \
-        ca-certificates curl git sudo jq tzdata gnupg openssh-client \
+        ca-certificates curl git sudo jq tzdata gnupg openssh-client rsync \
         libicu74 libkrb5-3 zlib1g libssl3 liblttng-ust1 \
  && install -m 0755 -d /etc/apt/keyrings \
  && curl -kfsSL "${DOCKER_MIRROR}/gpg" -o /etc/apt/keyrings/docker.asc \
