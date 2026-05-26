@@ -2,6 +2,10 @@
 .env
 .env.*
 !.env.example
+# runner 注册凭据（含 RSA 私钥），per-host
+.creds/
+# per-host bind-mount 覆盖（指向 .creds/）
+docker-compose.override.yml
 
 # 构建产物 / 临时文件
 build.log

@@ -158,3 +158,4 @@ docker-compose.override.yml   # if it's host-specific
 
 - GitHub Actions runner source: <https://github.com/actions/runner>
 - Compose override-file merge semantics for `volumes`: list-level fields are not deep-merged across files in the way scalars are; spelling out the full list per service avoids surprise drops
+- Real-world consumer of this pattern: [Pin github.com IP via docker-compose extra_hosts on China Unicom-hosted runners](../integration-issues/pin-github-ip-via-extra-hosts-from-china-unicom-2026-05-26.md) — adding `extra_hosts` to fix CN ISP IP blocking forces container recreation, which this pattern makes free (no token re-mint)

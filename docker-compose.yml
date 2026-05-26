@@ -17,6 +17,15 @@ x-runner-base: &runner-base
       DOCKER_MIRROR: "${DOCKER_MIRROR:-https://mirrors.aliyun.com/docker-ce/linux/ubuntu}"
   image: gha-runner:${RUNNER_VERSION:-2.334.0}
   restart: always
+  # 绕过宿主代理 Fake-IP DNS（198.18.0.0/15），强制使用公网解析器
+  dns:
+    - 1.1.1.1
+    - 8.8.8.8
+  # 中国联通对部分 GitHub IP 段限速（DNS 轮询给到 .x.4 / 20.205.243.166 多数不通），
+  # 固定到一个稳定可达的 IP；如后续失效，参考 docs/solutions/ 重新挑选可达 IP。
+  # 覆盖 GITHUB_HOST_IP 环境变量可自定义（如 docker compose 的 .env）。
+  extra_hosts:
+    - "github.com:${GITHUB_HOST_IP:-140.82.114.3}"
 
 services:
   runner:                                       # 现存的 runner-1，保持原 spec 不动

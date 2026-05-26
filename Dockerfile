@@ -101,5 +101,5 @@ ENV RUNNER_URL=https://github.com/wendao-ai \
     RUNNER_LABELS="" \
     RUNNER_WORKDIR=_work
 
-COPY --chown=runner:runner entrypoint.sh /entrypoint.sh
+COPY --chown=runner:runner --chmod=0755 entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
